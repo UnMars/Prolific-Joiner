@@ -15,7 +15,7 @@ from distutils.util import strtobool
 from argparse import ArgumentParser
 from rich.console import Console
 from rich.text import Text
-
+from pypasser import reCaptchaV3
 
 
 config = load(open(f'{Path(__file__).parent}/config/config.json'))
@@ -90,53 +90,38 @@ class ProlificUpdater:
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options= options)
         driver.get(pageurl)
         print("Driver launched")
-
-        site_key = "6LeMGXkUAAAAAOlMpEUm2UOldiq38QgBPJz5-Q-7" #Prolific site key
-        api_key = config["2captcha_api_key"]
-        form = {"method": "userrecaptcha",
-                "googlekey": site_key,
-                "key": api_key, 
-                "pageurl": pageurl, 
-                "json": 1}
-
-        response = post('http://2captcha.com/in.php', data=form)
-        request_id = response.json()['request']
-        url = f"http://2captcha.com/res.php?key={api_key}&action=get&id={request_id}&json=1"
         status = 0
         start = time()
         print("Trying to bypass captcha...")
         while not status:
-            res = get(url)
-            if res.json()['status']==0:
-                print("Failed, retrying...")
+            anchor_url = "https://www.recaptcha.net/recaptcha/api2/anchor?ar=1&k=6LeMGXkUAAAAAOlMpEUm2UOldiq38QgBPJz5-Q-7&co=aHR0cHM6Ly9pbnRlcm5hbC1hcGkucHJvbGlmaWMuY286NDQz&hl=fr&v=gWN_U6xTIPevg0vuq7g1hct0&size=invisible&cb=igv4yino6y0f"
+            reCaptcha_response = reCaptchaV3(anchor_url)
+            end = time()
+            print(f"Captcha solved in {end-start}s")
+            driver.execute_script(f'document.getElementsByName("username")[0].value = "{config["mail"]}"')
+            driver.execute_script(f'document.getElementsByName("password")[0].value = "{config["password"]}"')
+            print(reCaptcha_response)
+            driver.execute_script(f'document.getElementById("g-recaptcha-response-100000").innerHTML="{reCaptcha_response}";')
+            driver.find_element(By.ID, "login").submit()
+            sleep(3)
+            if driver.current_url =="https://internal-api.prolific.co/auth/accounts/login/":
+                status = 0
+                print("Failed to log in, retrying...")
+                driver.get(pageurl)
                 sleep(3)
-            else:
-                end = time()
-                print(f"Captcha solved in {end-start}s")
-                driver.execute_script(f'document.getElementsByName("username")[0].value = "{config["mail"]}"')
-                driver.execute_script(f'document.getElementsByName("password")[0].value = "{config["password"]}"')
-                requ = res.json()['request']
-                driver.execute_script(f'document.getElementById("g-recaptcha-response-100000").innerHTML="{requ}";')
-                driver.find_element(By.ID, "login").submit()
-                sleep(3)
-                if driver.current_url =="https://internal-api.prolific.co/auth/accounts/login/":
-                    status = 0
-                    print("Failed to log in, retrying...")
-                    driver.get(pageurl)
-                    sleep(3)
-                    start = time()
-                    continue
-                status = 1
-                print(f"Refresh {driver.current_url}")
-                driver.refresh()
-                while True:
-                    for request in driver.requests:
-                        if request.response:
-                            if request.url.startswith("https://internal-api.prolific.co/openid/authorize?client_id="):
-                                new_bearer = request.response.headers['location'].split("&")[0].split("access_token=")[-1]
-                                print(f"Got a new bearer token ! : {new_bearer}")
-                                return new_bearer
-                        sleep(0.5)
+                start = time()
+                continue
+            status = 1
+            print(f"Refresh {driver.current_url}")
+            driver.refresh()
+            while True:
+                for request in driver.requests:
+                    if request.response:
+                        if request.url.startswith("https://internal-api.prolific.co/openid/authorize?client_id="):
+                            new_bearer = request.response.headers['location'].split("&")[0].split("access_token=")[-1]
+                            print(f"Got a new bearer token ! : {new_bearer}")
+                            return new_bearer
+                    sleep(0.5)
 
 
     def executeCycle(self):
