@@ -4,3 +4,4 @@ rich==12.5.1
 selenium==4.3.0
 selenium_wire==4.6.0
 webdriver_manager==3.8.3
+PyPasser==0.0.5
