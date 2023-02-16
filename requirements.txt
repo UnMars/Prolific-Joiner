@@ -1,8 +1,8 @@
-plyer==2.0.0
-requests==2.27.1
-rich==12.5.1
-selenium==4.3.0
-selenium_wire==4.6.0
-webdriver_manager==3.8.3
+plyer==2.1.0
+requests==2.28.2
+rich==13.3.1
+selenium==4.8.0
+selenium_wire==5.1.0
+webdriver_manager==3.8.5
 PyPasser==0.0.5
-DateTime==4.4
+DateTime==5.0
