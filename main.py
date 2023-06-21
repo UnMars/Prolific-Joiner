@@ -30,7 +30,7 @@ class ProlificUpdater:
         self.participantId = config["Prolific_ID"]
 
     def getRequestFromProlific(self):
-        url = "https://internal-api.prolific.co/api/v1/studies/?current=1"
+        url = "https://internal-api.prolific.co/api/v1/participant/studies/"
         headers = CaseInsensitiveDict()
         headers["Accept"] = "application/json, text/plain, */*"
         headers["Authorization"] = self.bearer
