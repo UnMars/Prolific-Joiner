@@ -28,6 +28,14 @@ Edit the settings.json file.
 |password|Your password on Prolific *(used to renew token)*|
 |Prolific_ID|Your Prolific ID|
 
+## Known Error Code
+
+|Error Code|Details|Meaning
+| :------------: | :------------: | :------------: |
+|140010|PEC-SUB-0002: We are sorry but we could not create your submission at this time. This may be due to your current network connection. For more information please see our <a href="https://participant-help.prolific.co/hc/en-gb/articles/360012393100-PEC-Error">help centre article</a>.|https://participant-help.prolific.co/hc/en-gb/articles/360012393100-PEC-Error#heading-0 <br /> **The IP address that you are using was flagged for suspicious behaviour** </br> Either wait for it to resolve by itself or make a ticket to Prolific Support. <br /> *(Try also to raise sleep duration)*
+
+
+
 ## Features
 - Auto joining new study, generate a notification and open a new tab for it
 - Almost all requests based (except for the token renewal)
