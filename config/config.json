@@ -3,5 +3,7 @@
 
     "mail" : "",
     "password" : "",
-    "Prolific_ID": ""
+    "Prolific_ID": "",
+
+    "wait_time" : 30
 }
