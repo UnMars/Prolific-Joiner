@@ -70,7 +70,7 @@ class ProlificUpdater:
         options.add_argument('--disable-web-security')
         options.add_argument('--disable-site-isolation-trials')
         options.add_argument('--headless')
-        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version="114.0.5735.16").install()), options= options)
+        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options= options)
         driver.get(pageurl)
         status = 0
         start = time()
