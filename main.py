@@ -27,14 +27,14 @@ class ProlificUpdater:
         self.participantId = config["Prolific_ID"]
 
     def getRequestFromProlific(self) -> Response:
-        url = "https://internal-api.prolific.co/api/v1/participant/studies/"
+        url = "https://internal-api.prolific.com/api/v1/participant/studies/"
         headers = CaseInsensitiveDict()
         headers["Accept"] = "application/json, text/plain, */*"
         headers["Authorization"] = self.bearer
         return get(url, headers=headers)
 
     def reservePlace(self, id) -> Response:
-        url = "https://internal-api.prolific.co/api/v1/submissions/reserve/"
+        url = "https://internal-api.prolific.com/api/v1/submissions/reserve/"
         headers = CaseInsensitiveDict()
         headers["Accept"] = "application/json"
         headers["Authorization"] = self.bearer
@@ -61,7 +61,7 @@ class ProlificUpdater:
     
     def get_bearer_token(self) -> str:
         print("Getting a new bearer token...")
-        pageurl = 'https://internal-api.prolific.co/auth/accounts/login/'
+        pageurl = 'https://internal-api.prolific.com/auth/accounts/login/'
 
         options = Options()
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -84,7 +84,7 @@ class ProlificUpdater:
             driver.execute_script(f'document.getElementById("g-recaptcha-response-100000").innerHTML="{reCaptcha_response}";')
             driver.find_element(By.ID, "login").submit()
             sleep(3)
-            if driver.current_url =="https://internal-api.prolific.co/auth/accounts/login/":
+            if driver.current_url =="https://internal-api.prolific.com/auth/accounts/login/":
                 status = 0
                 print("Failed to log in, retrying...")
                 driver.get(pageurl)
@@ -96,7 +96,7 @@ class ProlificUpdater:
             while True:
                 for request in driver.requests:
                     if request.response:
-                        if request.url.startswith("https://internal-api.prolific.co/openid/authorize?client_id="):
+                        if request.url.startswith("https://internal-api.prolific.com/openid/authorize?client_id="):
                             new_bearer = request.response.headers['location'].split("&")[0].split("access_token=")[-1]
                             print(f"Got a new bearer token ! : {new_bearer}\n")
                             return new_bearer
@@ -117,7 +117,7 @@ class ProlificUpdater:
                         exit()
                 else:
                     playsound(fr'{Path(__file__).parent}\alert.wav', True)
-                    a_website = "https://app.prolific.co/studies"  # TODO: open url in results
+                    a_website = "https://app.prolific.com/studies"  # TODO: open url in results
                     open_new_tab(a_website)
         
         self.oldResults = results
