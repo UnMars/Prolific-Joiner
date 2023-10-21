@@ -15,7 +15,10 @@ from rich.console import Console
 from rich.text import Text
 from pypasser import reCaptchaV3
 from playsound import playsound
-
+import random
+import platform
+if platform.system() == 'Windows':
+    import ctypes
 config = load(open(f'{Path(__file__).parent}/config/config.json'))
 
 
@@ -117,7 +120,7 @@ class ProlificUpdater:
                         exit()
                 else:
                     playsound(fr'{Path(__file__).parent}\alert.wav', True)
-                    a_website = "https://app.prolific.com/studies"  # TODO: open url in results
+                    a_website = "https://app.prolific.com/studies"
                     open_new_tab(a_website)
         
         self.oldResults = results
@@ -139,6 +142,32 @@ def parseArgs() -> dict:
         pass
 
 
+if platform.system() == 'Windows':
+    class LASTINPUTINFO(ctypes.Structure):
+        _fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_uint)]
+
+    def get_idle_duration():
+        lii = LASTINPUTINFO()
+        lii.cbSize = ctypes.sizeof(LASTINPUTINFO)
+        if ctypes.windll.user32.GetLastInputInfo(ctypes.byref(lii)):
+            millis = ctypes.windll.kernel32.GetTickCount() - lii.dwTime
+            seconds = millis / 1000
+            return seconds
+        else:
+            error_code = ctypes.windll.kernel32.GetLastError()  # Get the last error code
+            print(f"Error code: {error_code}")
+            return 0  # Handle the error as needed
+
+    def pause_script():
+        print("Pausing script...")
+        while True:
+            idle_duration = get_idle_duration()
+            if idle_duration > 600:  # 10 minutes in seconds
+                print(f"Idle Time: {idle_duration} seconds [script paused after 10 minutes of inactivity, to avoid temp ban from the API due to overuse]")
+                sleep(10)
+            else:
+                print("Resuming script...")
+                break
 
 if __name__ == "__main__":
     myArguments = parseArgs()
@@ -159,9 +188,17 @@ if __name__ == "__main__":
             console.print(text)
             sleep(5)
             input("Press enter to resume study search")
-            updateTime = 60
-                  
-        else:
-            updateTime = config["wait_time"]
-        sleep(updateTime)
-        
+
+        if platform.system() == 'Windows':
+            idle_duration = get_idle_duration()
+            if idle_duration >= 600:  # 10 minutes in seconds
+                pause_script()                  
+            # else:
+            #     print(f"Idle Time: {idle_duration} seconds [script not paused]") #leave commented if not debugging
+
+        # Generate a random integer between -5 and 5
+        random_offset = random.randint(-5, 5)
+
+        # Generate a random number which is +/- 5 from the updateTime variable
+        random_time = updateTime + random_offset
+        sleep(random_time if random_time >= 0 else 0) #if statement covers edge case, if the user sets up <5 wait_time (I found <20 results in a temp ban), which with the use of random above, could result in a negative number being passed to the sleep()      
