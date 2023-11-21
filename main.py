@@ -71,6 +71,7 @@ class ProlificUpdater:
         options.add_experimental_option('useAutomationExtension', False)
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         options.add_argument('--disable-web-security')
+        options.add_argument('log-level=3')
         options.add_argument('--disable-site-isolation-trials')
         options.add_argument('--headless')
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options= options)
