@@ -64,7 +64,7 @@ class ProlificUpdater:
     
     def get_bearer_token(self) -> str:
         print("Getting a new bearer token...")
-        pageurl = 'https://internal-api.prolific.com/auth/accounts/login/'
+        pageurl = 'https://auth.prolific.com/u/login'
 
         options = Options()
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -85,8 +85,8 @@ class ProlificUpdater:
             print(f"Captcha solved in {end-start}s")
             driver.execute_script(f'document.getElementsByName("username")[0].value = "{config["mail"]}"')
             driver.execute_script(f'document.getElementsByName("password")[0].value = "{config["password"]}"')
-            driver.execute_script(f'document.getElementById("g-recaptcha-response-100000").innerHTML="{reCaptcha_response}";')
-            driver.find_element(By.ID, "login").submit()
+            # driver.execute_script(f'document.getElementById("g-recaptcha-response-100000").innerHTML="{reCaptcha_response}";')
+            driver.find_element(By.XPATH, '//button[@type="submit"]').click()
             sleep(3)
             if driver.current_url =="https://internal-api.prolific.com/auth/accounts/login/":
                 status = 0
@@ -99,11 +99,14 @@ class ProlificUpdater:
             driver.refresh()
             while True:
                 for request in driver.requests:
-                    if request.response:
-                        if request.url.startswith("https://internal-api.prolific.com/openid/authorize?client_id="):
-                            new_bearer = request.response.headers['location'].split("&")[0].split("access_token=")[-1]
-                            print(f"Got a new bearer token ! : {new_bearer}\n")
-                            return new_bearer
+                    if "https://internal-api.prolific.com/api/v1/" in request.url:
+                            try:
+                                new_bearer = request.headers["Authorization"]
+                                print(new_bearer)
+                                print(f"Got a new bearer token ! : {new_bearer}\n")
+                                return new_bearer
+                            except:
+                                pass
                     sleep(0.5)
 
 
