@@ -80,7 +80,7 @@ class ProlificUpdater:
         start = time()
         while not status:
             anchor_url = "https://www.recaptcha.net/recaptcha/api2/anchor?ar=1&k=6LeMGXkUAAAAAOlMpEUm2UOldiq38QgBPJz5-Q-7&co=aHR0cHM6Ly9pbnRlcm5hbC1hcGkucHJvbGlmaWMuY286NDQz&hl=fr&v=gWN_U6xTIPevg0vuq7g1hct0&size=invisible&cb=igv4yino6y0f"
-            reCaptcha_response = reCaptchaV3(anchor_url)
+            # reCaptcha_response = reCaptchaV3(anchor_url)
             end = time()
             print(f"Captcha solved in {end-start}s")
             driver.execute_script(f'document.getElementsByName("username")[0].value = "{config["mail"]}"')
@@ -88,7 +88,7 @@ class ProlificUpdater:
             # driver.execute_script(f'document.getElementById("g-recaptcha-response-100000").innerHTML="{reCaptcha_response}";')
             driver.find_element(By.XPATH, '//button[@type="submit"]').click()
             sleep(3)
-            if driver.current_url =="https://internal-api.prolific.com/auth/accounts/login/":
+            if driver.current_url =="https://auth.prolific.com/u/login":
                 status = 0
                 print("Failed to log in, retrying...")
                 driver.get(pageurl)
