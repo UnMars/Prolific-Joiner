@@ -34,6 +34,7 @@ class ProlificUpdater:
         headers = CaseInsensitiveDict()
         headers["Accept"] = "application/json, text/plain, */*"
         headers["Authorization"] = self.bearer
+        headers["x-legacy-auth"] = "false"
         return get(url, headers=headers)
 
     def reservePlace(self, id) -> Response:
@@ -41,6 +42,7 @@ class ProlificUpdater:
         headers = CaseInsensitiveDict()
         headers["Accept"] = "application/json"
         headers["Authorization"] = self.bearer
+        headers["x-legacy-auth"] = "false"
         postObj = {"study_id": id, "participant_id": self.participantId}
         return post(url, headers=headers, data = postObj)
 
