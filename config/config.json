@@ -5,5 +5,8 @@
     "password" : "",
     "Prolific_ID": "",
 
-    "wait_time" : 30
+    "wait_time" : 30,
+
+    "min_award_amount": 0.50, // set to 0 to disable
+    "min_award_per_hour": 5   // set to 0 to disable
 }
