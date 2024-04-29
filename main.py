@@ -116,19 +116,22 @@ class ProlificUpdater:
         results = self.getResultsFromProlific()
         if results:
             if results != self.oldResults:
-                console.print(f"""Trying to join {results[0]["name"]} ([bold green]${str(float(results[0]["study_reward"]["amount"])/100)}[/bold green])""")
-                reserve_place_res = self.reservePlace(id = results[0]["id"])
-                if reserve_place_res.status_code == 400:
-                        console.print(f"""[bold red][+] Error code {str(reserve_place_res.json()["error"]["error_code"])}
-                                      \nTitle : {str(reserve_place_res.json()["error"]["title"])}
-                                      \nDetails : {str(reserve_place_res.json()["error"]["detail"])}""")
-                        status.stop()
-                        exit()
+                if (config["min_award_amount"] <= results[0]["study_reward"]["amount"]/100) and (config["min_award_per_hour"] <= results[0]["study_average_reward_per_hour"]["amount"]/100):
+                    console.print(f"""Trying to join {results[0]["name"]} ([bold green]${str(float(results[0]["study_reward"]["amount"])/100)}[/bold green])""")
+                    reserve_place_res = self.reservePlace(id = results[0]["id"])
+                    if reserve_place_res.status_code == 400:
+                            console.print(f"""[bold red][+] Error code {str(reserve_place_res.json()["error"]["error_code"])}
+                                          \nTitle : {str(reserve_place_res.json()["error"]["title"])}
+                                          \nDetails : {str(reserve_place_res.json()["error"]["detail"])}""")
+                            status.stop()
+                            exit()
+                    else:
+                        playsound(fr'{Path(__file__).parent}\alert.wav', True)
+                        a_website = "https://app.prolific.com/studies"
+                        open_new_tab(a_website)
                 else:
-                    playsound(fr'{Path(__file__).parent}\alert.wav', True)
-                    a_website = "https://app.prolific.com/studies"
-                    open_new_tab(a_website)
-        
+                    console.print(f"""Skipping {results[0]["name"]} reward lower than threshold ([bold yellow]${str(float(results[0]["study_reward"]["amount"])/100)} / ${str(float(results[0]["study_average_reward_per_hour"]["amount"])/100)}[/bold yellow])/ph""")
+                        
         self.oldResults = results
         
         if results:
