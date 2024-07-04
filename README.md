@@ -19,11 +19,12 @@ python main.py
 ```
 
 ## Configuration
-Edit the settings.json file.
+Edit the config.json file.
 
 |Config|Usage|
 | :------------: | :------------: |
 |auto_renew_bearer|"True" or "False" *(default True)*|
+|stop_on_idle|"True" or "False" *(default True)*|
 |mail|Your mail on Prolific *(used to renew token)*|
 |password|Your password on Prolific *(used to renew token)*|
 |Prolific_ID|Your Prolific ID|
