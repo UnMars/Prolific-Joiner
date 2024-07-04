@@ -136,16 +136,17 @@ class ProlificUpdater:
         print("results : ", results)
         if results:
             if results != self.oldResults:
+                currency_symbol = "£" if str(results[0]["study_reward"]["currency"]) == "GBP" else "$"
                 console.print(
-                    f"""Trying to join {results[0]["name"]} ([bold green]${str(float(results[0]["study_reward"]["amount"])/100)}[/bold green])"""
+                    f"""Trying to join {results[0]["name"]} ([bold green]{currency_symbol}{str(float(results[0]["study_reward"]["amount"])/100)}[/bold green])"""
                 )
                 reserve_place_res = self.reservePlace(id=results[0]["id"])
                 if reserve_place_res.status_code == 400:
                     console.print(f"""[bold red][+] Error code {str(reserve_place_res.json()["error"]["error_code"])}
                                       \nTitle : {str(reserve_place_res.json()["error"]["title"])}
                                       \nDetails : {str(reserve_place_res.json()["error"]["detail"])}""")
-                    status.stop()
-                    exit()
+                    self.oldResults = results
+                    return False
                 else:
                     playsound(rf"{Path(__file__).parent}\alert.wav", True)
                     a_website = "https://app.prolific.com/studies"
@@ -223,8 +224,9 @@ if __name__ == "__main__":
             console.print(text)
             sleep(5)
             input("Press enter to resume study search")
+            status.start()
 
-        if platform.system() == "Windows":
+        if strtobool(config["pause_on_idle"]) and platform.system() == "Windows":
             idle_duration = get_idle_duration()
             if idle_duration >= 600:  # 10 minutes in seconds
                 pause_script()

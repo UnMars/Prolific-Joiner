@@ -1,9 +1,10 @@
 {
-    "auto_renew_bearer" : "True", 
+    "auto_renew_bearer" : "True",
+    "pause_on_idle" : "True",
 
     "mail" : "",
     "password" : "",
-    "Prolific_ID": "",
+    "Prolific_ID" : "",
 
     "wait_time" : 30
 }
