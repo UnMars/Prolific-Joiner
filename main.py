@@ -40,7 +40,7 @@ class ProlificUpdater:
         headers["Accept"] = "application/json, text/plain, */*"
         headers["Authorization"] = self.bearer
         headers["x-legacy-auth"] = "false"
-        return get(url, headers=headers)
+        return get(url, headers=headers, timeout=10)
 
     def reservePlace(self, id) -> Response:
         url = "https://internal-api.prolific.com/api/v1/submissions/reserve/"
@@ -88,7 +88,7 @@ class ProlificUpdater:
         isLoggedIn = False
         # start = time()
         while not isLoggedIn:
-            print("Login in...")
+            print("Logging in...")
             # anchor_url = "https://www.recaptcha.net/recaptcha/api2/anchor?ar=1&k=6LeMGXkUAAAAAOlMpEUm2UOldiq38QgBPJz5-Q-7&co=aHR0cHM6Ly9pbnRlcm5hbC1hcGkucHJvbGlmaWMuY286NDQz&hl=fr&v=gWN_U6xTIPevg0vuq7g1hct0&size=invisible&cb=igv4yino6y0f"
             # reCaptcha_response = reCaptchaV3(anchor_url)
             # end = time()
@@ -148,9 +148,9 @@ class ProlificUpdater:
                     self.oldResults = results
                     return False
                 else:
-                    playsound(rf"{Path(__file__).parent}\alert.wav", True)
                     a_website = "https://app.prolific.com/studies"
                     open_new_tab(a_website)
+                    playsound(rf"{Path(__file__).parent}\alert.wav", True)
 
         self.oldResults = results
 
