@@ -88,35 +88,38 @@ class ProlificUpdater:
         isLoggedIn = False
         # start = time()
         while not isLoggedIn:
-            print("Logging in...")
-            # anchor_url = "https://www.recaptcha.net/recaptcha/api2/anchor?ar=1&k=6LeMGXkUAAAAAOlMpEUm2UOldiq38QgBPJz5-Q-7&co=aHR0cHM6Ly9pbnRlcm5hbC1hcGkucHJvbGlmaWMuY286NDQz&hl=fr&v=gWN_U6xTIPevg0vuq7g1hct0&size=invisible&cb=igv4yino6y0f"
-            # reCaptcha_response = reCaptchaV3(anchor_url)
-            # end = time()
-            # print(f"Captcha solved in {end-start}s")
+            try:
+                print("Logging in...")
+                # anchor_url = "https://www.recaptcha.net/recaptcha/api2/anchor?ar=1&k=6LeMGXkUAAAAAOlMpEUm2UOldiq38QgBPJz5-Q-7&co=aHR0cHM6Ly9pbnRlcm5hbC1hcGkucHJvbGlmaWMuY286NDQz&hl=fr&v=gWN_U6xTIPevg0vuq7g1hct0&size=invisible&cb=igv4yino6y0f"
+                # reCaptcha_response = reCaptchaV3(anchor_url)
+                # end = time()
+                # print(f"Captcha solved in {end-start}s")
 
-            # Wait for the page to be fully loaded
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@type='submit']")))
+                # Wait for the page to be fully loaded
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@type='submit']")))
 
-            # Continue with the rest of the code
-            driver.execute_script(
-                f'document.getElementsByName("username")[0].value = "{config["mail"]}"'
-            )
-            driver.execute_script(
-                f'document.getElementsByName("password")[0].value = "{config["password"]}"'
-            )
-            driver.find_element(By.XPATH, '//button[@type="submit"]').click()
-            
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "image-container")))
+                # Continue with the rest of the code
+                driver.execute_script(
+                    f'document.getElementsByName("username")[0].value = "{config["mail"]}"'
+                )
+                driver.execute_script(
+                    f'document.getElementsByName("password")[0].value = "{config["password"]}"'
+                )
+                driver.find_element(By.XPATH, '//button[@type="submit"]').click()
+                
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "image-container")))
 
-            if driver.current_url == "https://auth.prolific.com/u/login":
-                isLoggedIn = False
-                print("[-] Failed to log in, retrying in 3s...")
-                driver.get(pageurl)
-                sleep(3)
-                # start = time()
-                continue
-            isLoggedIn = True
-            print("Logged in !")
+                if driver.current_url == "https://auth.prolific.com/u/login":
+                    isLoggedIn = False
+                    print("[-] Failed to log in, retrying in 3s...")
+                    driver.get(pageurl)
+                    sleep(3)
+                    # start = time()
+                    continue
+                isLoggedIn = True
+                print("Logged in !")
+            except Exception:
+                pass
         driver.refresh()
         print('[+] Retrieving bearer token from requests...')
         while True:
